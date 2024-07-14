@@ -9,10 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Learn NestJS')
-    .setDescription('The leaning-app API description')
+    .setTitle('Todo App')
+    .setDescription('This page lists all the apis and their documentaiton for Todo App.')
     .setVersion('1.0')
-    .addTag('learn')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
