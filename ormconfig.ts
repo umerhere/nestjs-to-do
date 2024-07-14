@@ -20,7 +20,6 @@ const databaseName = () => {
   return dbName;
 };
 
-console.log("DATABASE_PASSWORD", process.env.DATABASE_PASSWORD);
 const config: DataSourceOptions = {
   type: 'postgres',
   host: process.env.DATABASE_HOST,
