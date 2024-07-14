@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiQuery } from '@nestjs/swagger';
+import { Status, Priority } from './enum/task.enums';
 
 @ApiTags('Tasks')
 @Controller('tasks')
@@ -22,9 +23,18 @@ export class TasksController {
   }
 
   @Get()
-  async findAll() {
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'status', required: false, enum: Status })
+  @ApiQuery({ name: 'priority', required: false, enum: Priority })
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('status') status?: Status,
+    @Query('priority') priority?: Priority,
+  ) {
     try {
-      return await this.tasksService.findAll();
+      return await this.tasksService.findAll(page, limit, status, priority);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

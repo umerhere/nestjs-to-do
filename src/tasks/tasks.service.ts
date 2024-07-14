@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindManyOptions } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
+import { Status, Priority } from './enum/task.enums';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -35,17 +36,27 @@ export class TasksService {
     }
   }
   
-  async findAll(): Promise<Task[]> {
+  async findAll(page: number = 1, limit: number = 10, status?: Status, priority?: Priority): Promise<{ tasks: Task[], total: number }> {
     try {
-      return await this.taskRepository.find();
+      const options: FindManyOptions<Task> = {
+        skip: (page - 1) * limit,
+        take: limit,
+      };
+      
+      if (status) options.where = { ...options.where, status };
+      if (priority) options.where = { ...options.where, priority };
+
+      const [tasks, total] = await this.taskRepository.findAndCount(options);
+
+      return { tasks, total };
     } catch (error) {
-      throw new NotFoundException('Failed to fetch tasks');
+      throw new InternalServerErrorException('Failed to fetch tasks');
     }
   }
 
   async update(uid: string, updateTaskDto: Partial<UpdateTaskDto>): Promise<Task> {
     try {
-      const existingTask = await this.findOneByUid(uid);
+      await this.findOneByUid(uid);
 
       const {
         title,
@@ -68,7 +79,7 @@ export class TasksService {
         await this.taskRepository.update({ uid }, dataToUpdate);
       }
 
-      return await this.findOneByUid(uid); // Return updated task
+      return await this.findOneByUid(uid);
     } catch (error) {
       throw new InternalServerErrorException('Failed to update task');
     }
