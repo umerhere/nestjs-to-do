@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "node create-and-run-migrations.ts && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -17,7 +17,16 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "typeorm:cli": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli -f ./ormconfig.ts",
+    "migration-generate": "npm run typeorm:cli -- migration:generate -n",
+    "typeorm:migration:sync": "env NODE_ENV=production npm run typeorm schema:sync",
+    "typeorm:migration:drop": "env NODE_ENV=production npm run typeorm schema:drop",
+    "typeorm:migration:reset": "npm run typeorm:migration:drop && npm run typeorm:migration:sync",
+    "typeorm:migration:migrate": "env NODE_ENV=production npm run typeorm migration:generate -- -n",
+    "typeorm:migration:create": "env NODE_ENV=production npm run typeorm migration:create -- -n",
+    "typeorm:run-migrations": "npm run typeorm migration:run -- -d ./typeOrm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -27,6 +36,11 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/typeorm": "^10.0.2",
+    "class-transform": "^0.7.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
+    "pg": "^8.12.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
