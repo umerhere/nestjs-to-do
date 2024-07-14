@@ -16,22 +16,22 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  async findAll() {
+    return await this.tasksService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+  @Get(':uid')
+  async findOneByUid(@Param('uid') uid: string) {
+    return await this.tasksService.findOneByUid(uid);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(+id, updateTaskDto);
+  @Patch(':uid')
+  async update(@Param('uid') uid: string, @Body() updateTaskDto: UpdateTaskDto) {
+    return await this.tasksService.update(uid, updateTaskDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tasksService.remove(+id);
+  @Delete(':uid')
+  async remove(@Param('uid') uid: string) {
+    return await this.tasksService.remove(uid);
   }
 }

@@ -32,4 +32,5 @@ try {
     console.log('Migrations ran successfully');
 } catch (error) {
     console.error('Error running migrations:', error.message);
+    // process.exit(1); // Exit with a non-zero status code
 }
